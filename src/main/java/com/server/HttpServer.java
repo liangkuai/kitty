@@ -1,6 +1,5 @@
 package com.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +13,6 @@ import java.net.Socket;
  */
 public class HttpServer {
 
-    public static final String WEB_STATIC = System.getProperty("user.dir") + File.separator + "static";
     private static final String SHUTDOWN_COMMAND = "/SHUTDOWN";
 
     private boolean shutdown = false;
@@ -30,6 +28,7 @@ public class HttpServer {
             System.exit(1);
         }
 
+        // 循环等待请求
         while (!shutdown) {
             Socket socket = null;
             InputStream input = null;
@@ -40,21 +39,31 @@ public class HttpServer {
                 input = socket.getInputStream();
                 output = socket.getOutputStream();
 
-                // create request object and parse
+                // 创建 request
                 Request request = new Request(input);
                 request.parse();
 
-                // create reponse object
+                // 创建 response
                 Response response = new Response(output);
                 response.setRequest(request);
-                response.sendStaticResource();
 
-                // close the socket
+                // 判断请求的资源类型
+                if (request.getUri().startsWith("/servlet/")) {
+                    ServletProcessor processor = new ServletProcessor();
+                    processor.process(request, response);
+                } else {
+                    StaticResourceProcessor processor = new StaticResourceProcessor();
+                    processor.process(request, response);
+                }
+
+                // 关闭 socket
                 socket.close();
 
+                // 关闭命令
                 shutdown = request.getUri().equals(SHUTDOWN_COMMAND);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         }
     }
