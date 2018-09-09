@@ -1,4 +1,4 @@
-package com.server;
+package com.server.connector.http;
 
 import java.io.File;
 
@@ -10,4 +10,5 @@ public class Constants {
 
     public static final String WEB_STATIC = System.getProperty("user.dir") + File.separator + "static";
 
+    public static final String PACKAGE = "com.server.connector.http";
 }

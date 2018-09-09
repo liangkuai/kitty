@@ -1,5 +1,8 @@
 package com.server;
 
+import com.server.connector.http.HttpRequest;
+import com.server.connector.http.HttpResponse;
+
 import java.io.IOException;
 
 /**
@@ -8,10 +11,11 @@ import java.io.IOException;
  */
 public class StaticResourceProcessor {
 
-    public void process(Request request, Response response) {
+    public void process(HttpRequest request, HttpResponse response) {
         try {
             response.sendStaticResource();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
