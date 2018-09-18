@@ -9,6 +9,18 @@ import java.io.InputStream;
  */
 public class SocketInputStream extends InputStream {
 
+    /**
+     * CR
+     */
+    private static final byte CR = (byte) '\r';
+
+    /**
+     * LF
+     */
+    private static final byte LF = (byte) '\n';
+
+
+
     private InputStream in;
 
     /**
@@ -30,5 +42,15 @@ public class SocketInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         return 0;
+    }
+
+
+    public void readRequestLine(HttpRequestLine requestLine) {
+
+        if (requestLine.methodEnd != 0) {
+            requestLine.recycle();
+        }
+
+
     }
 }

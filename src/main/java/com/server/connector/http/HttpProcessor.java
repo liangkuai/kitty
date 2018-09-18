@@ -4,7 +4,7 @@ import com.server.ServletProcessor;
 import com.server.StaticResourceProcessor;
 import com.server.util.StringManager;
 
-import java.io.IOException;
+import javax.servlet.ServletException;
 import java.io.OutputStream;
 import java.net.Socket;
 
@@ -21,6 +21,7 @@ public class HttpProcessor {
     private HttpConnector connector;
 
     private HttpRequest request;
+    private HttpRequestLine requestLine = new HttpRequestLine();
     private HttpResponse response;
 
 
@@ -54,13 +55,27 @@ public class HttpProcessor {
             }
 
             socket.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    private void parseRequest(SocketInputStream input, OutputStream output) {
+    private void parseRequest(SocketInputStream input, OutputStream output) throws ServletException {
+        // 解析请求行
+        input.readRequestLine(requestLine);
+
+        String method = new String(requestLine.method, 0, requestLine.methodEnd);
+        String uri = null;
+        String protocol = new String(requestLine.protocol, 0, requestLine.protocolEnd);
+
+        // 校验请求行
+        if (method.length() < 1) {
+            throw new ServletException("Missing HTTP request method");
+        } else if (requestLine.uriEnd < 1) {
+            throw new ServletException("Missing HTTP request URI");
+        }
+
 
     }
 
