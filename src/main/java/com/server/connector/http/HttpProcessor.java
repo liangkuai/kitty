@@ -5,11 +5,14 @@ import com.server.StaticResourceProcessor;
 import com.server.util.StringManager;
 
 import javax.servlet.ServletException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
 /**
  * processor
+ *
+ * 负责处理请求
  *
  * @author liangkuai
  * @date 2018/9/9
@@ -20,8 +23,12 @@ public class HttpProcessor {
 
     private HttpConnector connector;
 
-    private HttpRequest request;
+    /**
+     * 请求行
+     */
     private HttpRequestLine requestLine = new HttpRequestLine();
+
+    private HttpRequest request;
     private HttpResponse response;
 
 
@@ -29,6 +36,9 @@ public class HttpProcessor {
         this.connector = connector;
     }
 
+    /**
+     * 处理 socket 连接
+     */
     public void process(Socket socket) {
         SocketInputStream input = null;
         OutputStream output = null;
@@ -39,10 +49,11 @@ public class HttpProcessor {
 
             request = new HttpRequest(input);
             response = new HttpResponse(output);
-            response.setRequest(request);
 
+            response.setRequest(request);
             response.setHeader("Server", "Servlet Container");
 
+            // 解析请求
             parseRequest(input, output);
             parseHeaders(input);
 
@@ -61,7 +72,11 @@ public class HttpProcessor {
     }
 
 
-    private void parseRequest(SocketInputStream input, OutputStream output) throws ServletException {
+    /**
+     * 解析请求
+     */
+    private void parseRequest(SocketInputStream input, OutputStream output)
+            throws ServletException, IOException {
         // 解析请求行
         input.readRequestLine(requestLine);
 

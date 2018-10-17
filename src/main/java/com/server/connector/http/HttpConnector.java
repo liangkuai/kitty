@@ -8,6 +8,8 @@ import java.net.Socket;
 /**
  * connector
  *
+ * 负责接收请求
+ *
  * @author liangkuai
  * @date 2018/9/9
  */
@@ -36,7 +38,8 @@ public class HttpConnector implements Runnable {
                 continue;
             }
 
-            // 将套接字交给 HttpProcessor
+            // 每个请求创建一个 HttpProcessor 实例
+            // 将套接字交给 HttpProcessor 进行处理
             HttpProcessor processor = new HttpProcessor(this);
             processor.process(socket);
         }
