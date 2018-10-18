@@ -46,4 +46,14 @@ public class HttpRequestLine {
         uriEnd = 0;
         protocolEnd = 0;
     }
+
+
+    public int index(char c) {
+        for (char i : uri) {
+            if (i == c)
+                return i;
+        }
+        return -1;
+    }
+
 }

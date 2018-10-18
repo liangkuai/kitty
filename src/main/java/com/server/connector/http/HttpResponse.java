@@ -20,7 +20,7 @@ public class HttpResponse implements HttpServletResponse {
     private OutputStream output;
     private PrintWriter writer;
 
-    private Map headers = new HashMap();
+    private Map<String, String> headers = new HashMap();
 
 
 

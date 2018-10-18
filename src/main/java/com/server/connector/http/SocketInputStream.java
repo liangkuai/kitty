@@ -53,6 +53,9 @@ public class SocketInputStream extends InputStream {
     }
 
 
+    /**
+     * 解析请求行：method uri protocol
+     */
     public void readRequestLine(HttpRequestLine requestLine) throws IOException {
         // method
 

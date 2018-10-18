@@ -20,7 +20,14 @@ public class HttpRequest implements HttpServletRequest {
 
     private InputStream input;
 
+    private String method;
+    private String protocol;
+
+    private String requestSessionId;
+    private boolean requestedSessionURL;
+    private String queryString;
     private String requestURI;
+
 
     private Map headers = new HashMap();
     private List cookies = new ArrayList();
@@ -34,9 +41,52 @@ public class HttpRequest implements HttpServletRequest {
 
 
     @Override
+    public String getMethod() {
+        return this.method;
+    }
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    @Override
+    public String getProtocol() {
+        return this.protocol;
+    }
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    @Override
+    public String getRequestedSessionId() {
+        return this.requestSessionId;
+    }
+    public void setRequestSessionId(String requestSessionId) {
+        this.requestSessionId = requestSessionId;
+    }
+
+    public boolean isRequestedSessionURL() {
+        return requestedSessionURL;
+    }
+    public void setRequestedSessionURL(boolean requestedSessionURL) {
+        this.requestedSessionURL = requestedSessionURL;
+    }
+
+    @Override
+    public String getQueryString() {
+        return this.queryString;
+    }
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    @Override
     public String getRequestURI() {
         return null;
     }
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
+    }
+
 
 
 
@@ -76,11 +126,6 @@ public class HttpRequest implements HttpServletRequest {
     }
 
     @Override
-    public String getMethod() {
-        return null;
-    }
-
-    @Override
     public String getPathInfo() {
         return null;
     }
@@ -96,11 +141,6 @@ public class HttpRequest implements HttpServletRequest {
     }
 
     @Override
-    public String getQueryString() {
-        return null;
-    }
-
-    @Override
     public String getRemoteUser() {
         return null;
     }
@@ -112,11 +152,6 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public Principal getUserPrincipal() {
-        return null;
-    }
-
-    @Override
-    public String getRequestedSessionId() {
         return null;
     }
 
@@ -212,11 +247,6 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public Map getParameterMap() {
-        return null;
-    }
-
-    @Override
-    public String getProtocol() {
         return null;
     }
 
