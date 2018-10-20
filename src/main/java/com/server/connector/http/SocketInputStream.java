@@ -28,6 +28,16 @@ public class SocketInputStream extends InputStream {
      */
     private static final byte SP = (byte) ' ';
 
+    /**
+     * HT（9）
+     */
+    private static final byte HT = (byte) '\t';
+
+    /**
+     * Colon（58）
+     */
+    private static final byte COLON = (byte) ':';
+
 
 
     private InputStream in;
@@ -54,9 +64,14 @@ public class SocketInputStream extends InputStream {
 
 
     /**
-     * 解析请求行：method uri protocol
+     * 解析请求行
+     *
+     * ---------------------
+     * method uri protocol
+     * [CR][LF]
+     * ---------------------
      */
-    public void readRequestLine(HttpRequestLine requestLine) throws IOException {
+    void readRequestLine(HttpRequestLine requestLine) throws IOException {
         // method
 
         int maxRead = requestLine.method.length;
@@ -91,10 +106,10 @@ public class SocketInputStream extends InputStream {
             // 遇到空格结束
             if (buf[pos] == SP) {
                 space = true;
-                pos++;
             } else {
-                requestLine.method[readCount++] = (char) buf[pos++];
+                requestLine.method[readCount++] = (char) (buf[pos] & 0xff);
             }
+            pos++;
         }
 
         requestLine.methodEnd = readCount;
@@ -131,10 +146,10 @@ public class SocketInputStream extends InputStream {
             // 遇到空格结束
             if (buf[pos] == SP) {
                 space = true;
-                pos++;
             } else {
-                requestLine.uri[readCount++] = (char) buf[pos++];
+                requestLine.uri[readCount++] = (char) (buf[pos] & 0xff);
             }
+            pos++;
         }
 
         requestLine.uriEnd = readCount;
@@ -174,7 +189,7 @@ public class SocketInputStream extends InputStream {
             } else if (buf[pos] == LF) {
                 eof = true;
             } else {
-                requestLine.uri[readCount++] = (char) buf[pos];
+                requestLine.uri[readCount++] = (char) (buf[pos] & 0xff);
             }
             pos++;
         }
@@ -182,6 +197,106 @@ public class SocketInputStream extends InputStream {
         requestLine.uriEnd = readCount ;
     }
 
+
+    /**
+     * 解析首部
+     *
+     * ---------
+     * name: value
+     * [CR][LF]
+     * ---------
+     */
+    void readHeader(HttpHeader header) throws IOException {
+
+        // header name
+
+        int maxRead = header.name.length;
+        int readCount = 0;
+
+        boolean colon = false;
+        while (!colon) {
+            if (readCount >= maxRead) {
+                if ((maxRead * 2) <= HttpHeader.MAX_NAME_SIZE) {
+                    char[] newName = new char[maxRead * 2];
+                    System.arraycopy(header.name, 0, newName, 0, maxRead);
+                    header.name = newName;
+                    maxRead *= 2;
+                } else {
+                    throw new IOException(sm.getString("requestStream.readline.toolong"));
+                }
+            }
+
+            if (pos >= count) {
+                if (read() == -1) {
+                    throw new IOException(sm.getString("requestStream.readline.error"));
+                }
+                pos = 0;
+            }
+
+            // 当前字符是否是冒号
+            if (buf[pos] == COLON) {
+                // 遇到冒号，读完 header name
+                colon = true;
+            } else {
+                header.name[readCount++] = (char) (buf[pos] & 0xff);
+            }
+            pos++;
+        }
+
+        header.nameEnd = readCount - 1;
+
+        // header value
+        maxRead = header.value.length;
+        readCount = 0;
+
+        // value 前的空格
+        boolean space = true;
+        while (space) {
+            if (pos >= count) {
+                if (read() == -1) {
+                    throw new IOException(sm.getString("requestStream.readline.error"));
+                }
+                pos = 0;
+            }
+            if ((buf[pos] == SP) || (buf[pos] == HT)) {
+                pos++;
+            } else {
+                space = false;
+            }
+        }
+
+        boolean eof = false;
+        while (!eof) {
+            if (readCount >= maxRead) {
+                if ((maxRead * 2) <= HttpHeader.MAX_VALUE_SIZE) {
+                    char[] newValue = new char[maxRead * 2];
+                    System.arraycopy(header.value, 0, newValue, 0, maxRead);
+                    header.value = newValue;
+                    maxRead *= 2;
+                } else {
+                    throw new IOException(sm.getString("requestStream.readline.toolong"));
+                }
+            }
+
+            if (pos >= count) {
+                if (read() == -1) {
+                    throw new IOException(sm.getString("requestStream.readline.error"));
+                }
+                pos = 0;
+            }
+
+            if (buf[pos] == CR) {
+                // 跳过
+            } else if (buf[pos] == LF) {
+                eof = true;
+            } else {
+                header.value[readCount++] = (char) (buf[pos] & 0xff);
+            }
+            pos++;
+        }
+
+        header.valueEnd = readCount;
+    }
 
 
 

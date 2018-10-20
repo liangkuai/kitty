@@ -23,14 +23,23 @@ public class HttpRequest implements HttpServletRequest {
     private String method;
     private String protocol;
 
-    private String requestSessionId;
+    private String requestedSessionId;
+    /**
+     * URL 中是否有 session id
+     */
     private boolean requestedSessionURL;
+    /**
+     * Cookie 中是否有 session id
+     */
+    private boolean requestedSessionCookie;
     private String queryString;
     private String requestURI;
 
+    private Map<String, List<String>> headers = new HashMap<>();
+    private List<Cookie> cookies = new ArrayList<>();
 
-    private Map headers = new HashMap();
-    private List cookies = new ArrayList();
+    private int contentLength;
+    private String contentType;
 
 
 
@@ -58,10 +67,10 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public String getRequestedSessionId() {
-        return this.requestSessionId;
+        return this.requestedSessionId;
     }
-    public void setRequestSessionId(String requestSessionId) {
-        this.requestSessionId = requestSessionId;
+    public void setRequestedSessionId(String requestSessionId) {
+        this.requestedSessionId = requestSessionId;
     }
 
     public boolean isRequestedSessionURL() {
@@ -69,6 +78,13 @@ public class HttpRequest implements HttpServletRequest {
     }
     public void setRequestedSessionURL(boolean requestedSessionURL) {
         this.requestedSessionURL = requestedSessionURL;
+    }
+
+    public boolean isRequestedSessionCookie() {
+        return requestedSessionCookie;
+    }
+    public void setRequestedSessionCookie(boolean requestedSessionCookie) {
+        this.requestedSessionCookie = requestedSessionCookie;
     }
 
     @Override
@@ -86,6 +102,52 @@ public class HttpRequest implements HttpServletRequest {
     public void setRequestURI(String requestURI) {
         this.requestURI = requestURI;
     }
+
+
+    public void addHeader(String name, String value) {
+        name = name.toLowerCase();
+        synchronized (headers) {
+            List<String> values = headers.get(name);
+            if (values == null) {
+                values = new ArrayList<>();
+                headers.put(name, values);
+            }
+            values.add(value);
+        }
+    }
+
+
+    @Override
+    public boolean isRequestedSessionIdFromCookie() {
+        return false;
+    }
+
+
+    public void addCookie(Cookie cookie) {
+        synchronized (cookies) {
+            cookies.add(cookie);
+        }
+    }
+
+
+    @Override
+    public int getContentLength() {
+        return this.contentLength;
+    }
+    public void setContentLength(int contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    @Override
+    public String getContentType() {
+        return this.contentType;
+    }
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+
+
 
 
 
@@ -181,11 +243,6 @@ public class HttpRequest implements HttpServletRequest {
     }
 
     @Override
-    public boolean isRequestedSessionIdFromCookie() {
-        return false;
-    }
-
-    @Override
     public boolean isRequestedSessionIdFromURL() {
         return false;
     }
@@ -213,16 +270,6 @@ public class HttpRequest implements HttpServletRequest {
     @Override
     public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 
-    }
-
-    @Override
-    public int getContentLength() {
-        return 0;
-    }
-
-    @Override
-    public String getContentType() {
-        return null;
     }
 
     @Override
