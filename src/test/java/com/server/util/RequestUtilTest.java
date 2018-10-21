@@ -2,6 +2,8 @@ package com.server.util;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * @author liangkuai
  * @date 2018/10/21
@@ -17,5 +19,9 @@ public class RequestUtilTest {
         System.out.println(header.substring(0, index));
         System.out.println(header.substring(index + 1));
         System.out.println(header.substring(index));
+
+        String queryString = "";
+        byte[] bs = queryString.getBytes();
+        System.out.println(Arrays.toString(bs));
     }
 }

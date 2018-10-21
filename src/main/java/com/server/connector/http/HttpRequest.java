@@ -1,5 +1,8 @@
 package com.server.connector.http;
 
+import com.server.util.ParameterMap;
+import com.server.util.RequestUtil;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
@@ -40,6 +43,16 @@ public class HttpRequest implements HttpServletRequest {
 
     private int contentLength;
     private String contentType;
+
+
+    /**
+     * 查询字符串是否被解析过
+     */
+    private boolean parsed = false;
+    /**
+     * 参数
+     */
+    private ParameterMap parameters = null;
 
 
 
@@ -146,6 +159,57 @@ public class HttpRequest implements HttpServletRequest {
         this.contentType = contentType;
     }
 
+
+    /**
+     * 参数
+     */
+    @Override
+    public String getParameter(String name) {
+        parseParameters();
+        return null;
+    }
+
+    @Override
+    public Enumeration getParameterNames() {
+        return null;
+    }
+
+    @Override
+    public String[] getParameterValues(String name) {
+        return new String[0];
+    }
+
+    @Override
+    public Map getParameterMap() {
+        return null;
+    }
+
+
+    /**
+     * 解析查询字符串
+     */
+    private void parseParameters() {
+        // 被解析过则结束
+        if (parsed)
+            return;
+
+        ParameterMap results = parameters;
+        if (results == null) {
+
+        }
+
+        String encoding = getCharacterEncoding();
+        if (encoding == null) {
+            encoding = "ISO-8859-1";
+        }
+
+        String queryString = getQueryString();
+        try {
+            RequestUtil.parseParameters(results, queryString, encoding);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
@@ -274,26 +338,6 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return null;
-    }
-
-    @Override
-    public String getParameter(String name) {
-        return null;
-    }
-
-    @Override
-    public Enumeration getParameterNames() {
-        return null;
-    }
-
-    @Override
-    public String[] getParameterValues(String name) {
-        return new String[0];
-    }
-
-    @Override
-    public Map getParameterMap() {
         return null;
     }
 

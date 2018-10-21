@@ -247,7 +247,7 @@ public class HttpProcessor {
 
         // cookie
         if ("cookie".endsWith(name)) {
-            Cookie[] cookies = RequestUtil.parseCooikeHeader(value);
+            Cookie[] cookies = RequestUtil.parseCookieHeader(value);
             for (Cookie cookie : cookies) {
 
                 if ("jsessionid".equals(cookie.getName())) {
