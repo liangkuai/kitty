@@ -92,6 +92,14 @@ public class HttpResponse implements HttpServletResponse {
     }
 
 
+    public void finishResponse() {
+        if (writer != null) {
+            writer.flush();
+            writer.close();
+        }
+    }
+
+
 
     @Override
     public void addCookie(Cookie cookie) {

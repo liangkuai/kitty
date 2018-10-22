@@ -42,8 +42,8 @@ public class HttpProcessor {
      * 处理 socket 连接
      */
     public void process(Socket socket) {
-        SocketInputStream input = null;
-        OutputStream output = null;
+        SocketInputStream input;
+        OutputStream output;
 
         try {
             input = new SocketInputStream(socket.getInputStream(), 2048);

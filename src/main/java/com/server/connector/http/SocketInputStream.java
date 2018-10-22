@@ -189,12 +189,12 @@ public class SocketInputStream extends InputStream {
             } else if (buf[pos] == LF) {
                 eof = true;
             } else {
-                requestLine.uri[readCount++] = (char) buf[pos];
+                requestLine.protocol[readCount++] = (char) buf[pos];
             }
             pos++;
         }
 
-        requestLine.uriEnd = readCount ;
+        requestLine.protocolEnd = readCount ;
     }
 
 

@@ -110,7 +110,7 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return null;
+        return this.requestURI;
     }
     public void setRequestURI(String requestURI) {
         this.requestURI = requestURI;

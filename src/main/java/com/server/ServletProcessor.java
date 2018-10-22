@@ -39,7 +39,7 @@ public class ServletProcessor {
             System.out.println(e.toString());
         }
 
-        Servlet servlet = null;
+        Servlet servlet;
         HttpRequestFacade requestFacade = new HttpRequestFacade(request);
         HttpResponseFacade responseFacade = new HttpResponseFacade(response);
         try {
@@ -48,5 +48,6 @@ public class ServletProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        response.finishResponse();
     }
 }
