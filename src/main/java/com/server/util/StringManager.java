@@ -15,7 +15,11 @@ import java.util.ResourceBundle;
  */
 public class StringManager {
 
-    private static Map<String, StringManager> managers = new HashMap<>();
+    /**
+     * 下面的同步方法 getManager() 控制了多线程互斥访问，
+     * 再使用 volatile 保证 managers 在各个线程中的可见性
+     */
+    private static volatile Map<String, StringManager> managers = new HashMap<>();
 
     private ResourceBundle bundle;
 
@@ -31,7 +35,7 @@ public class StringManager {
             throw new NullPointerException(msg);
         }
 
-        String str = null;
+        String str;
         try {
             str = bundle.getString(key);
         } catch (MissingResourceException mre) {

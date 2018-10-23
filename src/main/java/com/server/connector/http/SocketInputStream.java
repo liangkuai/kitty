@@ -244,7 +244,7 @@ public class SocketInputStream extends InputStream {
             pos++;
         }
 
-        header.nameEnd = readCount - 1;
+        header.nameEnd = readCount;
 
         // header value
         maxRead = header.value.length;

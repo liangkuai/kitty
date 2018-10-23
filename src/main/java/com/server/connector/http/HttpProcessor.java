@@ -237,45 +237,54 @@ public class HttpProcessor {
 
 
     private void parseHeaders(SocketInputStream input) throws IOException, ServletException {
-
-        HttpHeader header = new HttpHeader();
-        input.readHeader(header);
-
-        String name = new String(header.name, 0, header.nameEnd);
-        String value = new String(header.value, 0, header.valueEnd);
-        request.addHeader(name, value);
-
-        // cookie
-        if ("cookie".endsWith(name)) {
-            Cookie[] cookies = RequestUtil.parseCookieHeader(value);
-            for (Cookie cookie : cookies) {
-
-                if ("jsessionid".equals(cookie.getName())) {
-                    if (!request.isRequestedSessionIdFromCookie()) {
-                        request.setRequestedSessionId(cookie.getValue());
-                        request.setRequestedSessionCookie(true);
-                        request.setRequestedSessionURL(false);
-                    }
+        while (true) {
+            HttpHeader header = new HttpHeader();
+            input.readHeader(header);
+            if (header.nameEnd == 0) {
+                if (header.valueEnd == 0) {
+                    return;
+                } else {
+                    throw new ServletException
+                            (sm.getString("httpProcessor.parseHeaders.colon"));
                 }
-
-                request.addCookie(cookie);
             }
-        }
 
-        // content-length
-        if ("content-length".equals(name)) {
-            int n;
-            try {
-                n = Integer.parseInt(value);
-            } catch (Exception e) {
-                throw new ServletException(sm.getString("httpProcessor.parseHeaders.contentLength"));
+            String name = new String(header.name, 0, header.nameEnd);
+            String value = new String(header.value, 0, header.valueEnd);
+            request.addHeader(name, value);
+
+            // cookie
+            if ("cookie".endsWith(name)) {
+                Cookie[] cookies = RequestUtil.parseCookieHeader(value);
+                for (Cookie cookie : cookies) {
+
+                    if ("jsessionid".equals(cookie.getName())) {
+                        if (!request.isRequestedSessionIdFromCookie()) {
+                            request.setRequestedSessionId(cookie.getValue());
+                            request.setRequestedSessionCookie(true);
+                            request.setRequestedSessionURL(false);
+                        }
+                    }
+
+                    request.addCookie(cookie);
+                }
             }
-            request.setContentLength(n);
-        }
 
-        // content-type
-        if ("content-type".equals(name)) {
-            request.setContentType(value);
+            // content-length
+            if ("content-length".equals(name)) {
+                int n;
+                try {
+                    n = Integer.parseInt(value);
+                } catch (Exception e) {
+                    throw new ServletException(sm.getString("httpProcessor.parseHeaders.contentLength"));
+                }
+                request.setContentLength(n);
+            }
+
+            // content-type
+            if ("content-type".equals(name)) {
+                request.setContentType(value);
+            }
         }
     }
 }
