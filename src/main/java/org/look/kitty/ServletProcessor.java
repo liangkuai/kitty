@@ -1,6 +1,6 @@
-package com.server;
+package org.look.kitty;
 
-import com.server.connector.http.*;
+import org.look.kitty.connector.http.*;
 
 import javax.servlet.Servlet;
 import java.io.File;

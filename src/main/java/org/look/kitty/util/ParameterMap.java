@@ -1,4 +1,4 @@
-package com.server.util;
+package org.look.kitty.util;
 
 import java.util.HashMap;
 import java.util.Map;

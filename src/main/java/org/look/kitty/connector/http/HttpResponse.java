@@ -1,4 +1,4 @@
-package com.server.connector.http;
+package org.look.kitty.connector.http;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;

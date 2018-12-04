@@ -1,4 +1,4 @@
-package com.server.util;
+package org.look.kitty.util;
 
 import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;

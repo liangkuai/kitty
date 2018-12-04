@@ -1,9 +1,9 @@
-package com.server.connector.http;
+package org.look.kitty.connector.http;
 
-import com.server.ServletProcessor;
-import com.server.StaticResourceProcessor;
-import com.server.util.RequestUtil;
-import com.server.util.StringManager;
+import org.look.kitty.ServletProcessor;
+import org.look.kitty.StaticResourceProcessor;
+import org.look.kitty.util.RequestUtil;
+import org.look.kitty.util.StringManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

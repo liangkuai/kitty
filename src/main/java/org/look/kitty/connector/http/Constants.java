@@ -1,4 +1,4 @@
-package com.server.connector.http;
+package org.look.kitty.connector.http;
 
 import java.io.File;
 

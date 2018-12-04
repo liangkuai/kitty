@@ -1,7 +1,7 @@
-package com.server;
+package org.look.kitty;
 
-import com.server.connector.http.HttpRequest;
-import com.server.connector.http.HttpResponse;
+import org.look.kitty.connector.http.HttpRequest;
+import org.look.kitty.connector.http.HttpResponse;
 
 import java.io.IOException;
 

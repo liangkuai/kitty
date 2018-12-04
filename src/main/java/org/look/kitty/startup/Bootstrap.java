@@ -1,6 +1,6 @@
-package com.server.startup;
+package org.look.kitty.startup;
 
-import com.server.connector.http.HttpConnector;
+import org.look.kitty.connector.http.HttpConnector;
 
 /**
  * @author liangkuai

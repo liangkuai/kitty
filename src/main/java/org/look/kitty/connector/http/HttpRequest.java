@@ -1,7 +1,7 @@
-package com.server.connector.http;
+package org.look.kitty.connector.http;
 
-import com.server.util.ParameterMap;
-import com.server.util.RequestUtil;
+import org.look.kitty.util.ParameterMap;
+import org.look.kitty.util.RequestUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;

@@ -1,6 +1,6 @@
-package com.server.connector.http;
+package org.look.kitty.connector.http;
 
-import com.server.util.StringManager;
+import org.look.kitty.util.StringManager;
 
 import java.io.IOException;
 import java.io.InputStream;
