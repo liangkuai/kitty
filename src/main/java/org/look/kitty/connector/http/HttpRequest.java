@@ -23,8 +23,72 @@ public class HttpRequest implements HttpServletRequest {
 
     private InputStream input;
 
+
+
+    public HttpRequest(InputStream input) {
+        this.input = input;
+    }
+
+
+    /*********************************** request line ************************************/
+
     private String method;
+    private String requestURI;
+    private String queryString;
     private String protocol;
+
+    /**
+     * method
+     */
+    @Override
+    public String getMethod() {
+        return this.method;
+    }
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    /**
+     * request url
+     */
+    @Override
+    public String getRequestURI() {
+        return this.requestURI;
+    }
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
+    }
+
+    /**
+     * request url, query string
+     */
+    @Override
+    public String getQueryString() {
+        return this.queryString;
+    }
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    /**
+     * protocol
+     */
+    @Override
+    public String getProtocol() {
+        return this.protocol;
+    }
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+
+
+
+
+
+    /************************************* header ************************************/
+
+    private Map<String, List<String>> headers = new HashMap<>();
 
     private String requestedSessionId;
     /**
@@ -35,49 +99,30 @@ public class HttpRequest implements HttpServletRequest {
      * Cookie 中是否有 session id
      */
     private boolean requestedSessionCookie;
-    private String queryString;
-    private String requestURI;
 
-    private Map<String, List<String>> headers = new HashMap<>();
     private List<Cookie> cookies = new ArrayList<>();
 
     private int contentLength;
     private String contentType;
 
 
+
+    public void addHeader(String name, String value) {
+        name = name.toLowerCase();
+        synchronized (headers) {
+            List<String> values = headers.get(name);
+            if (values == null) {
+                values = new ArrayList<>();
+                headers.put(name, values);
+            }
+            values.add(value);
+        }
+    }
+
+
     /**
-     * 查询字符串是否被解析过
+     * session id
      */
-    private boolean parsed = false;
-    /**
-     * 参数
-     */
-    private ParameterMap parameters = null;
-
-
-
-    public HttpRequest(InputStream input) {
-        this.input = input;
-    }
-
-
-
-    @Override
-    public String getMethod() {
-        return this.method;
-    }
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    @Override
-    public String getProtocol() {
-        return this.protocol;
-    }
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
     @Override
     public String getRequestedSessionId() {
         return this.requestedSessionId;
@@ -101,41 +146,14 @@ public class HttpRequest implements HttpServletRequest {
     }
 
     @Override
-    public String getQueryString() {
-        return this.queryString;
-    }
-    public void setQueryString(String queryString) {
-        this.queryString = queryString;
-    }
-
-    @Override
-    public String getRequestURI() {
-        return this.requestURI;
-    }
-    public void setRequestURI(String requestURI) {
-        this.requestURI = requestURI;
-    }
-
-
-    public void addHeader(String name, String value) {
-        name = name.toLowerCase();
-        synchronized (headers) {
-            List<String> values = headers.get(name);
-            if (values == null) {
-                values = new ArrayList<>();
-                headers.put(name, values);
-            }
-            values.add(value);
-        }
-    }
-
-
-    @Override
     public boolean isRequestedSessionIdFromCookie() {
         return false;
     }
 
 
+    /**
+     * cookie
+     */
     public void addCookie(Cookie cookie) {
         synchronized (cookies) {
             cookies.add(cookie);
@@ -143,6 +161,9 @@ public class HttpRequest implements HttpServletRequest {
     }
 
 
+    /**
+     * content-length
+     */
     @Override
     public int getContentLength() {
         return this.contentLength;
@@ -151,6 +172,9 @@ public class HttpRequest implements HttpServletRequest {
         this.contentLength = contentLength;
     }
 
+    /**
+     * content-type
+     */
     @Override
     public String getContentType() {
         return this.contentType;
@@ -160,9 +184,23 @@ public class HttpRequest implements HttpServletRequest {
     }
 
 
+
+    /************************************* header ************************************/
+
     /**
-     * 参数
+     * 查询字符串是否被解析过
      */
+    private boolean parsed = false;
+
+    /**
+     * 参数，包括：
+     *
+     * 1. start line 中 request url 的 query string 部分
+     * 2. body 中的参数
+     */
+    private ParameterMap parameters = null;
+
+
     @Override
     public String getParameter(String name) {
         parseParameters();
@@ -186,7 +224,7 @@ public class HttpRequest implements HttpServletRequest {
 
 
     /**
-     * 解析查询字符串
+     * 获取参数
      */
     private void parseParameters() {
         // 被解析过则结束
@@ -195,7 +233,8 @@ public class HttpRequest implements HttpServletRequest {
 
         ParameterMap results = parameters;
         if (results == null) {
-
+            results = new ParameterMap();
+            results.setLocked(false);
         }
 
         String encoding = getCharacterEncoding();
@@ -209,6 +248,18 @@ public class HttpRequest implements HttpServletRequest {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+
+        // TODO: 解析 body，当且仅当：
+        // 1. post method
+        // 2. content-type: application/x-www-form-urlencoded
+
+
+
+        // 锁定 params
+        results.setLocked(true);
+        parsed = true;
+        parameters = results;
     }
 
 
